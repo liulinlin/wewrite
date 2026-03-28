@@ -70,7 +70,7 @@ python3 -c "import markdown, bs4, cssutils, requests, yaml, pygments, PIL" 2>&1
 - 存在 → 提取 `name`、`topics`、`tone`、`voice`、`blacklist`、`theme`、`cover_style`、`author`、`content_style`
 - 不存在 → `读取: {skill_dir}/references/onboard.md`，完成后回到 Step 1
 
-如果用户直接给了选题 → 跳到 Step 4。
+如果用户直接给了选题 → 跳到 Step 3（仍需框架选择和素材采集，不可跳过）。
 
 ---
 
@@ -152,6 +152,8 @@ WebSearch: "{选题关键词} 数据 报告 2025 2026"
 ```
 
 人格文件定义了：语气浓度、数据呈现方式、情绪弧线、段落节奏、不确定性表达模板等。作为 Step 4c 的硬性约束执行。
+
+**优先级**：playbook.md > persona > writing-guide.md。writing-guide 是底线（禁用词等），persona 在此基础上特化风格参数，playbook 是用户个性化的最终覆盖。
 
 **4c. 写文章**：
 - H1 标题（20-28 字） + H2 结构，1500-2500 字
@@ -240,6 +242,7 @@ python3 {skill_dir}/toolkit/cli.py preview {markdown} --theme {theme} --no-open 
   framework: "{框架}"
   word_count: {字数}
   media_id: "{id}"  # 降级时 null
+  writing_persona: "{人格名}"
   dimensions:
     - "{维度}: {选项}"
   stats: null
@@ -274,7 +277,9 @@ python3 {skill_dir}/toolkit/cli.py preview {markdown} --theme {theme} --no-open 
 | 热点抓取 | WebSearch 替代 |
 | 选题为空 | 请用户手动给选题 |
 | SEO 脚本 | LLM 判断 |
+| 素材采集（WebSearch） | LLM 训练数据中可验证的公开信息 |
 | 维度随机化 | history 空时跳过去重 |
+| Persona 文件不存在 | 回退到 midnight-friend（默认） |
 | 去 AI 验证 | 3 次重写不过则跳过该项 |
 | 生图失败 | 输出提示词 |
 | 推送失败 | 本地 HTML |
